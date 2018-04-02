@@ -1,0 +1,47 @@
+html, body, main {
+    box-sizing : border-box;
+    font-size : 14px;
+    height : 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .hidden {
+    display : none;
+  }
+  
+  .faded {
+    /** using $(section).fadeTo("slow", 0.5) instead **/
+  }
+  
+  .highlighted {
+    background : white;
+  }
+  
+  .search-textbox {
+    border : 2px solid black;
+    width : 250px;
+  }
+  
+  .search-section {
+    border : 1px solid black;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .search-button {
+    border : 1px solid blue;
+  }
+  
+  .info-section {
+    margin-right : auto;
+    margin-left : auto;
+    padding : 10px;
+    background-color : lightgrey;
+  }
+  
+  #map_container {
+    height : 100%;
+  }
+  
+  

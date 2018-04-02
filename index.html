@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="content">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="See which cities look appealing to you!">
+    <title>Check out these cities</title>
+    <link href="index.css" rel="stylesheet" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9NlPLHrnlmoxJE5oL7OvN7w37Hz3AeEQ&ampcallback=initMap" async defer></script>
+  </head>
+  <body>
+    <main>
+      <section class="search-section">
+        <form>
+          <button class="search-button"><img src="https://png.icons8.com/metro/50/000000/search.png"></button>
+          <input type="text" placeholder="Chicago, Illinois, United States" class="search-textbox hidden" required>
+        </form>
+      </section>
+      <section class="info-section hidden"></section>
+      <div id="map_container"></div>
+      <footer class="hidden"><p>Icon provided by <a href="https://icons8.com" target="_blank">Icons8</a></p></footer>
+    </main>
+    <script src="teleport_cities.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

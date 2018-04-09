@@ -15,6 +15,7 @@ function initMap() {
     {featureType : "locality" , elementType : "labels" , stylers : { "visibility": "off" }}
     ] 
     });
+    main();
 }
 
 function main() {
@@ -31,6 +32,7 @@ function main() {
     handleExitButton();
     handleClickOnMap();
     
+    initializeMap();
     setUserFocus(`.search_button`);
   }  
   
@@ -451,5 +453,3 @@ function main() {
   
 $(initializePage)
 }
-
-$(main);    

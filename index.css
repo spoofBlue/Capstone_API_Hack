@@ -10,10 +10,6 @@ html, body, main {
 display : none;
 }
 
-.faded {
-/** using $(section).fadeTo("slow", 0.5) instead **/
-}
-
 .highlighted {
 background : white;
 }

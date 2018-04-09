@@ -1,0 +1,1 @@
+The purpose of this project is to practice creating asynchronous calls to other API's.  In this project, I utilize Google Maps, Wikipedia, and Teleport (an urban city datbase with large details) to allow the user to view information using a graphical or text-based interface.

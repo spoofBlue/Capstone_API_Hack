@@ -22,6 +22,10 @@ function main() {
       startTextboxMode();
     });
   }
+
+  function getUserTextboxInput() {
+    USER_INPUT = $(".search_textbox").val();
+  }
   
   // Change dispalys to show TEXTBOX_MODE and fade map to background.
   //*** Add class="faded untouchable" to (map)

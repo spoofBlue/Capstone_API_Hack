@@ -1,10 +1,28 @@
+let MAP;
+
+function initMap() {
+  MAP = new google.maps.Map(document.getElementById('map_container'), {
+    center: {lat: 0, lng: 0},
+    zoom: 2 ,
+    minZoom : 2 ,
+    maxZoom : 6 ,
+    mapTypeId: google.maps.MapTypeId.HYBRID ,
+    mapTypeControl: false,
+    streetViewControl: false,
+    styles : [
+    {featureType : "road.arterial" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
+    {featureType : "transit" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
+    {featureType : "locality" , elementType : "labels" , stylers : { "visibility": "off" }}
+    ] 
+    });
+}
+
 function main() {
   
   let MAP_MODE = true;
   let TEXTBOX_MODE = false;
   let INFO_MODE = false;
   let USER_INPUT = "";
-  let MAP;
   let MARKERS = [];
   
   function initializePage() {
@@ -273,20 +291,6 @@ function main() {
   /////////////////////////////////////////////////////////
   
   function initializeMap() {
-    MAP = new google.maps.Map(document.getElementById('map_container'), {
-      center: {lat: 0, lng: 0},
-      zoom: 2 ,
-      minZoom : 2 ,
-      maxZoom : 6 ,
-      mapTypeId: google.maps.MapTypeId.HYBRID ,
-      mapTypeControl: false,
-      streetViewControl: false,
-      styles : [
-      {featureType : "road.arterial" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
-      {featureType : "transit" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
-      {featureType : "locality" , elementType : "labels" , stylers : { "visibility": "off" }}
-      ] 
-      });
     showInitialCities();
     
     MAP.addListener("zoom_changed", function() {

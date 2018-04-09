@@ -10,15 +10,16 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9NlPLHrnlmoxJE5oL7OvN7w37Hz3AeEQ&ampcallback=initMap" async defer></script>
   </head>
   <body>
-    <main>
-      <section class="search-section">
-        <form>
-          <button class="search-button"><img src="https://png.icons8.com/metro/50/000000/search.png"></button>
-          <input type="text" placeholder="Chicago, Illinois, United States" class="search-textbox hidden" required>
+    <main role="main">
+      <section class="search_section">
+        <form role="form">
+          <button class="search_button" id="search_button" role="button" alt="Open Search Textbox" title="Open Search Textbox"><img src="https://png.icons8.com/metro/50/000000/search.png" alt="Search Icon"></button>
+          <input type="text" role="search" placeholder="Type in a city and a state/country..." class="search_textbox hidden" aria-live="assertive" required>
         </form>
       </section>
-      <section class="info-section hidden"></section>
-      <div id="map_container"></div>
+      <section class="info_section hidden"></section>
+      <input type="image" class="exit_button right top hidden" src="https://n6-img-fp.akamaized.net/free-icon/cancel-button_318-80292.jpg" alt="Exit Section" title="Exit Section">
+      <div id="map_container" aria-live="off"></div>
       <footer class="hidden"><p>Icon provided by <a href="https://icons8.com" target="_blank">Icons8</a></p></footer>
     </main>
     <script src="cities_database.js"></script>

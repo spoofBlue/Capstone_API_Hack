@@ -13,7 +13,6 @@ function main() {
     handleExitButton();
     handleClickOnMap();
     
-    initializeMap();
     setUserFocus(`.search_button`);
   }  
   

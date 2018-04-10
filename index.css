@@ -115,6 +115,11 @@ padding : 0 2px 3%;
 }
 
 @media screen and (min-width: 540px) {
+
+  .intro_section {
+    max-width: 720px;
+  }
+
   .teleport_info {
     padding : 0 7%;
     max-width: 720px;

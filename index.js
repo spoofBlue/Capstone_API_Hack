@@ -14,8 +14,8 @@ function initMap() {
     {featureType : "transit" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
     {featureType : "locality" , elementType : "labels" , stylers : { "visibility": "off" }}
     ] 
-    });
-    main();
+  });
+  main();
 }
 
 function main() {
@@ -30,11 +30,21 @@ function main() {
     handleClickOnSearchSection();
     handleSearchButton();
     handleExitButton();
+    handleEscKeyboardPress();
     handleClickOnMap();
     
-    initializeMap();
-    setUserFocus(`.search_button`);
+    initializeMapCities();
+    startIntroMode();
   }  
+  
+  function startIntroMode() {
+    removeHiddenClass(".intro_section");
+    removeHiddenClass(".exit_button");
+    addHiddenClass(".search_section");
+    addFadedClass("#map_container");
+    
+    setUserFocus(".exit_button");
+  }
   
   function handleClickOnSearchSection() {
     $(".search_section").click(function() {
@@ -90,7 +100,7 @@ function main() {
       url : `https://api.teleport.org/api/cities/` ,
       data : {
         search : `${input}` ,
-        limit : 7
+        limit : 3
       } ,
       dataType : `json` ,
       type : `GET` ,
@@ -108,10 +118,10 @@ function main() {
   function startInfoMode(data) {
     showAllInfo(data);
     
+    addHiddenClass(".search_section");
+    addHiddenClass("#map_container");
     removeHighlightedClass(".search_button");
     removeHiddenClass(".info_section");
-    addHiddenClass("#map_container");
-    addHiddenClass(".search_section");
     
     INFO_MODE = true;
   }
@@ -276,7 +286,20 @@ function main() {
   
   function handleExitButton() {
     $("main").on("click", ".exit_button", function() {
-      if (INFO_MODE === true) {
+      exitSection();
+    });
+  }
+  
+  function handleEscKeyboardPress() {
+    $(document).keyup(function(event) {
+      if (event.keyCode === 27) {
+       exitSection();
+      }
+    });
+  }
+  
+  function exitSection() {
+    if (INFO_MODE === true) {
         if (MAP_MODE === true) {
           startMapMode();
         } else if (TEXTBOX_MODE === true) {
@@ -285,50 +308,59 @@ function main() {
       } else {
         startMapMode();
       }
-    });
   }
 
   /////////////////////////////////////////////////////////
   /////////////////// MAP_MODE ///////////////////
   /////////////////////////////////////////////////////////
   
-  function initializeMap() {
+  // Although
+  function initializeMapCities() {
     showInitialCities();
     
     MAP.addListener("zoom_changed", function() {
       if (MAP.getZoom() > MAP.minZoom) {
         showTeleportCities();
       } else {
-        showInitialCities();
+        clearMarkers();
       }
     });
   }
   
-  // Grab all cities from the stored variable TELEPORTCITIES. The if statement only allows a fraction of cities to be placed on the map using the equation.  Essentially, the more zoomed in the map is, the more cities that will display.
+  // Grab all cities from the stored variable TELEPORTCITIES. The for/if statement only allows a fraction of cities to be placed on the map using the equation.  Essentially, the more zoomed in the map is, the more cities that will display.
   function showTeleportCities() {
     clearMarkers();
-    showInitialCities();
     Object.keys(TELEPORTCITIES).forEach(function(cityName, index) {
       let zoomMax = MAP.maxZoom - MAP.minZoom;
       let zoomCurr = MAP.getZoom() - MAP.minZoom;
-      if (index % zoomMax < zoomCurr) {
+      if (index % zoomMax < (zoomCurr)) {
         displayTeleportCity(cityName);
       }
     });
   } 
   
+  // Gets all cities from INITIALCITIES gets them displayed on map through fuction..
   function showInitialCities() {
-    clearMarkers();
     Object.keys(INITIALCITIES).forEach(function(cityName) {
       displayTeleportCity(cityName);
     });
   }
   
+  // Clears all markers that aren't the INITIALCITIES markers for now.
   function clearMarkers() {
-    for (var i = 0; i < MARKERS.length; i++) {
+    console.log(`${MARKERS.length} before`);
+    let zoomMax = MAP.maxZoom - MAP.minZoom;
+    let zoomCurr = MAP.getZoom() - MAP.minZoom;
+    let initialCitiesLength = Object.keys(INITIALCITIES).length;
+    console.log(Object.keys(TELEPORTCITIES).length);
+    let stayingCitiesLength = (Object.keys(TELEPORTCITIES).length / (zoomMax)) * zoomCurr;
+    console.log(initialCitiesLength);
+    console.log(stayingCitiesLength);
+    for (let i = MARKERS.length - 1; i >= initialCitiesLength + stayingCitiesLength; i--) {
       MARKERS[i].setMap(null);
+      MARKERS.splice(i, 1);
     }
-    MARKERS = [];
+    console.log(`${MARKERS.length} after`);
   }
   
   //Given a simple cityName (ex: "Austin"), accesses Teleport API to get city details, then uses those details to add a Marker to the MAP.
@@ -399,6 +431,7 @@ function main() {
     addHiddenClass(".search_textbox");
     addHiddenClass(".info_section");
     addHiddenClass(".exit_button");
+    addHiddenClass(".intro_section");
     removeHiddenClass("#map_container");
     removeHiddenClass(".search_section");
     removeFadedClass("#map_container");

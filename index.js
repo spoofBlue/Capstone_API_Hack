@@ -329,7 +329,6 @@ function main() {
   
   // Grab all cities from the stored variable TELEPORTCITIES. The for/if statement only allows a fraction of cities to be placed on the map using the equation.  Essentially, the more zoomed in the map is, the more cities that will display.
   function showTeleportCities() {
-    clearMarkers();
     Object.keys(TELEPORTCITIES).forEach(function(cityName, index) {
       let zoomMax = MAP.maxZoom - MAP.minZoom;
       let zoomCurr = MAP.getZoom() - MAP.minZoom;
@@ -337,6 +336,7 @@ function main() {
         displayTeleportCity(cityName);
       }
     });
+    clearMarkers();
   } 
   
   // Gets all cities from INITIALCITIES gets them displayed on map through fuction..
@@ -351,8 +351,6 @@ function main() {
     console.log(`${MARKERS.length} before`);
     let zoomMax = MAP.maxZoom - MAP.minZoom;
     let zoomCurr = MAP.getZoom() - MAP.minZoom;
-    let initialCitiesLength = Object.keys(INITIALCITIES).length;
-    console.log(Object.keys(TELEPORTCITIES).length);
     let stayingCitiesLength = (Object.keys(TELEPORTCITIES).length / (zoomMax)) * zoomCurr;
     console.log(initialCitiesLength);
     console.log(stayingCitiesLength);

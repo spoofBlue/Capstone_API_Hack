@@ -351,8 +351,8 @@ function main() {
     console.log(`${MARKERS.length} before`);
     let zoomMax = MAP.maxZoom - MAP.minZoom;
     let zoomCurr = MAP.getZoom() - MAP.minZoom;
+    let initialCitiesLength = Object.keys(INITIALCITIES).length;
     let stayingCitiesLength = (Object.keys(TELEPORTCITIES).length / (zoomMax)) * zoomCurr;
-    console.log(initialCitiesLength);
     console.log(stayingCitiesLength);
     for (let i = MARKERS.length - 1; i >= initialCitiesLength + stayingCitiesLength; i--) {
       MARKERS[i].setMap(null);

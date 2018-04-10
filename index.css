@@ -19,7 +19,8 @@ html, body, main {
 .intro_section {
   position : absolute;
   top: 50%;
-  transform: translateY(-60%);
+  left: 50%;
+  transform: translate(-50%, -60%);
   padding : 5px;
   color: #330000;
 }
@@ -117,8 +118,6 @@ padding : 0 2px 3%;
 @media screen and (min-width: 540px) {
 
   .intro_section {
-    right: 50%;
-    transform: translateX(-50%);
     max-width: 720px;
   }
 

@@ -4,25 +4,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="View and explore urban cities using Google Maps, Wikipedia, and detailed Teleport data!">
-    <title>Urban Discovery</title>
+    <title>Urban City Discovery</title>
     <link href="index.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
   <body>
     <main role="main">
-      <section class="intro_section hidden"><h1>Welcome to Urban Discovery!</h1> 
-      <h2>About this project:</h2>
-      <ul><li>Thanks to Teleport API, we have extensive details on over 250 cities! Hover over a yellow peg to see the city name.  Click on it to access city information.</li>
-        <li>Double click on the map to zoom into an area and see more cities!</li>
-        <li>You can also search for any city using the search button!  You'll receive Wikipedia data on any city, and detailed Teleport data on most large, urban areas.</li>
-      </ul></section>
       <section class="search_section hidden">
         <form role="form">
           <button class="search_button" id="search_button" role="button" alt="Open Search Textbox" title="Open Search Textbox"><img src="https://png.icons8.com/metro/50/000000/search.png" alt="Search Icon"></button>
           <input type="text" role="search" placeholder="Type in a city and a state/country..." class="search_textbox hidden" aria-live="assertive" required>
         </form>
       </section>
+      <section role="infosection" class="help_section hidden"><h1>Welcome to Urban City Discovery!</h1> 
+        <h2>About this project:</h2>
+        <ul><li>Thanks to Teleport API, we have extensive details on over 250 cities! Hover over a yellow peg to see the city name.  Click on it to access city information.</li>
+          <li>Double click on the map to zoom into an area and see more cities!</li>
+          <li>You can also search for any city using the search button!  You'll receive Wikipedia data on any city, and detailed Teleport data on most large, urban areas.</li>
+        </ul></section>
       <section class="info_section hidden"></section>
       <input type="image" class="exit_button right top hidden" src="https://n6-img-fp.akamaized.net/free-icon/cancel-button_318-80292.jpg" alt="Exit Section" title="Exit Section">
       <div id="map_container" aria-live="off"></div>

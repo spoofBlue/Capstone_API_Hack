@@ -1,5 +1,6 @@
 let MAP;
 
+// As the HTML loads, the Google Maps API is called.  Once successful, initMap() is called, displaying the MAP for the user.  After completetion of the map. Remainder of program begins.
 function initMap() {
   MAP = new google.maps.Map(document.getElementById('map_container'), {
     center: {lat: 0, lng: 0},
@@ -20,14 +21,15 @@ function initMap() {
 
 function main() {
   
+  // Globals
   let MAP_MODE = true;
   let TEXTBOX_MODE = false;
   let INFO_MODE = false;
   let USER_INPUT = "";
   let MARKERS = [];
   
+  //First function in main() called, this initializes many handlers.  Then places first MAP markers and shows intro.
   function initializePage() {
-    handleClickOnSearchSection();
     handleSearchButton();
     handleExitButton();
     handleEscKeyboardPress();
@@ -37,36 +39,37 @@ function main() {
     startIntroMode();
   }  
   
+  // Presents Intro section.  Note: Could have made implemented most these properties in initial HTML, but allowed this section to be easily removable.
   function startIntroMode() {
-    removeHiddenClass(".intro_section");
+    removeHiddenClass(".help_section");
     removeHiddenClass(".exit_button");
     addHiddenClass(".search_section");
     addFadedClass("#map_container");
     
     setUserFocus(".exit_button");
   }
-  
-  function handleClickOnSearchSection() {
-    $(".search_section").click(function() {
-      startTextboxMode();
-    });
-  }
 
+  /////////////////////////////////////////////////////////
+  /////////////////// TEXTBOX_MODE ///////////////////
+  /////////////////////////////////////////////////////////
+
+  // Sets the user's input from the textbox into the global value USER_INPUT.
   function getUserTextboxInput() {
     USER_INPUT = $(".search_textbox").val();
   }
   
-  // Change dispalys to show TEXTBOX_MODE and fade map to background.
-  //*** Add class="faded untouchable" to (map)
+  // Change dispalys to show TEXTBOX_MODE and fade map to background.  Shows help section as well.
   function startTextboxMode() {
     addHighlightedClass(".search_button");
     removeHiddenClass(".search_textbox");
     removeHiddenClass(".exit_button");
     removeHiddenClass("#map_container");
+    removeHiddenClass(".help_section");
     addHiddenClass(".info_section");
     removeFadedClass(".search_section");
     addFadedClass("#map_container");
     reassignAltTitleAttribute(".search_button", "Search City");
+    fillSearchHelpSection();
     
     setUserFocus(".search_textbox");
       
@@ -75,9 +78,25 @@ function main() {
     INFO_MODE = false;
   }
   
-  // If the textbox is already up and has user input inside, clicking the search icon will begin the text-based search for a city.
+  // Changes HTML of the help section to Textbox Modes helpful tips.
+  function fillSearchHelpSection() {
+    if (! $(`.help_section`).hasClass("search_help")) {
+      $(`.help_section`).addClass("search_help");
+      $(`.help_section`).html(`<h2>Here are some ideas for cities to search!</h2>
+        <ul><li>A potential vacation spot! Many major cities have leisure and culture statistics.</li>
+        <li>Where you grew up. Some Wikipedia entries have a surprising history!</li>
+        <li>Looking to move? Check out a major city for cost of living details.</li>
+        <li>You can always zoom into the map to spark your curiosity.</li>
+        </ul>`);
+    }
+    
+  }
+  
+  // On click of the search button, sets up text-based search mode.
+  // If the textbox is already up and has user input inside, clicking the search button will begin the text-based search for a city.
   function handleSearchButton() {
     $(".search_button").click(function(event) {
+      startTextboxMode();
       event.preventDefault();
       if (TEXTBOX_MODE === true) {
         getUserTextboxInput();
@@ -92,9 +111,8 @@ function main() {
   /////////////////// INFO_MODE ///////////////////
   /////////////////////////////////////////////////////////
   
-// In TEXTBOX_MODE, On click of 'search icon':
-// Search user input in city database of Teleport API
-// input could come from text search or map city click.
+// Given input from either the text-based search or the cityName provided by a clicked Google Maps city.
+// Ajax call searches user input in city database of Teleport API.  Success moves user to Info Mode.
   function processInput(input) {
     const general_settings = {
       url : `https://api.teleport.org/api/cities/` ,
@@ -105,27 +123,31 @@ function main() {
       dataType : `json` ,
       type : `GET` ,
       success : startInfoMode ,
-      error : failedSearch
+      error : displayNoSearchResults
     };
     $.ajax(general_settings);
   }
   
   function failedSearch(error) {
-    console.log(`City failed to load.`);
+    console.log(`Minor Teleport error" ${error}`);
   }
   
-  // If processInput(input) is sucessful after user uses search function, this function grabs the first city object from data and will show Teleport/Wikipedia information if available.
+  // data is the search results of the user's input from Teleport API. 
+  // Passed on data to function utilizing data. Changes display to show Info Mode by hiding MAP, search section, and showing info section.
   function startInfoMode(data) {
     showAllInfo(data);
     
     addHiddenClass(".search_section");
     addHiddenClass("#map_container");
+    addHiddenClass(".help_section");
     removeHighlightedClass(".search_button");
     removeHiddenClass(".info_section");
     
     INFO_MODE = true;
   }
   
+  // data is the search results of the user's input from Teleport API.
+  // Function gets first city result from data and gives query to functions to display relevant Teleport and Wikipedia info.
   function showAllInfo(data) {
     $(".info_section").empty();
     if (verifyTeleportDataNotEmpty(data)) {
@@ -138,17 +160,22 @@ function main() {
     }
   }
   
+  // data is the search results of the user's input from Teleport API.
+  // Checks to make sure there are any search results.
   function verifyTeleportDataNotEmpty(data) {
     return !jQuery.isEmptyObject(data._embedded[`city:search-results`]);
   }
   
+  // Notifies user there are no search results for their city.
   function displayNoSearchResults() {
     $(".info_section").html(`<h1 aria-live="assertive">There is no information for this city in our database.</h1>`);
     removeHiddenClass(".exit_button");
+
     setUserFocus(`.exit_button`);
   }
   
-  // Variable (city) is a collection of very simple data on a specific city. We need more. This function retrieves more detailed info on a city from Teleport's API. Then displays in on the webpage.
+  // Variable (city) is a collection of very simple data on a specific city. We need more.
+  // This function retrieves more detailed info on a city from Teleport's API. Sends details to display-functions.
   function showTeleportCityInfo(city) {
     const cityDetails = getTeleportCityInfo(city);
     displayBasicInfoContent(cityDetails);
@@ -157,7 +184,8 @@ function main() {
     setUserFocus(".city_found");
   }
   
-  // Input received is Teleport's basic information on one city (an object). Ajax call to get more detailed info on the given city.
+  // Variable (city) is Teleport's basic information on one city (an object). 
+  // Ajax call to get more detailed info on the given city. Success returns city's details, after function organizes data into easily accessible object.
   function getTeleportCityInfo(city) {
     const link = city[`_links`][`city:item`][`href`];
     let cityDetails = ``;
@@ -176,8 +204,8 @@ function main() {
     return cityDetails;
   }
   
-  // Variable (data) has more information on a specific city from Teleport API, retrieved using it's geonameid.  This functions
-  // Write this description in more detail.
+  // Variable (data) has more detail on a specific city from Teleport API.
+  // This function organizes details into easily readable object.
   function getTeleportCityDetails(data) {
     let cityDetails = {
       cityName : data.name ,
@@ -192,6 +220,8 @@ function main() {
     return cityDetails;
   }
   
+  // cityDetails is object with various properties of a city.
+  // Displays conclusion of search to user, and lays down template to insert remaining data.
   function displayBasicInfoContent(cityDetails) {
     $(`.info_section`).append(`
       <div class=info_section_background></div>
@@ -202,7 +232,8 @@ function main() {
     removeHiddenClass(".exit_button");
   }
   
-  
+  // cityDetails is object with various properties of a city.
+  // Displays the Teleport widget only if cityDetails shows result is near a city with extensive Teleport data.
   function displayTeleportCityInfo(cityDetails) {
     if (cityDetails[`closestUrbanCity`] === null) {
       $(`.teleport_info`).append(`<h2>There are no large cities close to ${cityDetails[`cityName`]}.</h2>`);
@@ -221,18 +252,14 @@ function main() {
   }
   
   // Teleport must receive a lowercase, dash-spaced city name to properly display the widget. This function changes the current name for a version suitable for calling back the API needed.
-  
   function convertNameToReferenceKey(urbanName) {
     const answer = urbanName.replace(/\s/g,"-").replace(/,|\./g,"").toLowerCase();
     return answer;
   }
   
-  // As I can't make synchronous calls with jsonp files, I can't return statements to this function as originally intended (like showTeleportCityInfo, which has displayTeleportCityInfo). I'll have to move displayWikipediaInfo into a success callback downstream.   
+  // Variable (city) is Teleport's basic information on one city (an object). 
+  // Function searchs for this city in their database. Success uses search results.
   function showWikipediaInfo(city) {
-    getWikipediaEntry(city);
-  }
-  
-  function getWikipediaEntry(city) {
     const general_settings = {
       url : `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${city}` ,
       dataType : `jsonp` ,
@@ -247,6 +274,8 @@ function main() {
     console.log(`Wiki search failed.`);
   }
   
+  // data is the search results for a city in Wikipedia.
+  // Functions gets first result and requests HTML text from Wikipedia.
   function getWikiEntryIntro(data) {
     const wikiEntry = data[`query`][`search`][0];
     const pageid = wikiEntry[`pageid`];
@@ -263,6 +292,8 @@ function main() {
     $.ajax(general_settings);
   }
 
+  // data includes details on for Wikipedia's city search (first entry), pageid identifies relevant Wikipedia page.
+  // Function makes an object from the title and the page's introduction HTML, passes it on.
   function getIntroHtml(data, pageid) {
     const cityDetails = {
       name : data[`query`][`pages`][pageid][`title`] ,
@@ -271,6 +302,8 @@ function main() {
     displayWikipediaInfo(cityDetails);
   }
   
+  // cityDetails has an object with Variable (name) which is a city, and (introHTML) the HTML for the page introduction.
+  // Displays the name and the introduction to the HTML page.
   function displayWikipediaInfo(cityDetails) {
     $(`.wikipedia_info`).empty();
     $(`.wikipedia_info`).append(`<h2>The wikipedia summary for ${cityDetails[`name`]}.</h2>`);
@@ -278,18 +311,22 @@ function main() {
     $(`.wikipedia_info`).append(`${text}`);
   }
   
+  // str is HTML.
+  // Function removes almost all HTML elements except span and paragraph elements.
   function removeHtmlFormatting(str) {
     str = str.replace(/<br>/gi, "\n");
     str = str.replace(/<[^p](?:.|\s)*?>/g, "");
     return str;
   }
   
+  // On click of exit button, page will exit help, search, or info sections.
   function handleExitButton() {
     $("main").on("click", ".exit_button", function() {
       exitSection();
     });
   }
   
+  // On keyboard press of Esc key, page will exit help, search, or info sections. keyCode 27 => Esc
   function handleEscKeyboardPress() {
     $(document).keyup(function(event) {
       if (event.keyCode === 27) {
@@ -298,23 +335,24 @@ function main() {
     });
   }
   
+  //  Change which section user returns to, based on current location when requesting exit.
   function exitSection() {
     if (INFO_MODE === true) {
-        if (MAP_MODE === true) {
-          startMapMode();
-        } else if (TEXTBOX_MODE === true) {
-          startTextboxMode();
-        }
-      } else {
+      if (MAP_MODE === true) {
         startMapMode();
-      }
+      } else if (TEXTBOX_MODE === true) {
+        startTextboxMode();
+        }
+    } else {
+        startMapMode();
+    }
   }
 
   /////////////////////////////////////////////////////////
   /////////////////// MAP_MODE ///////////////////
   /////////////////////////////////////////////////////////
   
-  // Although
+  // Although Google Maps is initialized thanks to initMap(), this function must place the city markers on the map.  Event listener on zoom puts on or removes markers based on zoom.
   function initializeMapCities() {
     showInitialCities();
     
@@ -327,7 +365,7 @@ function main() {
     });
   }
   
-  // Grab all cities from the stored variable TELEPORTCITIES. The for/if statement only allows a fraction of cities to be placed on the map using the equation.  Essentially, the more zoomed in the map is, the more cities that will display.
+  // Grab all cities from TELEPORTCITIES in cities.database.js. The for/if statement only allows a fraction of cities to be placed on the map using the equation.  Essentially, the more zoomed in the map is, the more cities that will display.
   function showTeleportCities() {
     clearMarkers();
     Object.keys(TELEPORTCITIES).forEach(function(cityName, index) {
@@ -339,14 +377,14 @@ function main() {
     });
   } 
   
-  // Gets all cities from INITIALCITIES gets them displayed on map through fuction..
+  // Gets all cities from INITIALCITIES from cities_database.js and displays on map as markers in next function.
   function showInitialCities() {
     Object.keys(INITIALCITIES).forEach(function(cityName) {
       displayTeleportCity(cityName);
     });
   }
   
-  // Clears all markers that aren't the INITIALCITIES markers for now.
+  // Clears all markers that aren't the INITIALCITIES markers.
   function clearMarkers() {
     let initialCitiesLength = Object.keys(INITIALCITIES).length;
     for (let i = MARKERS.length - 1; i >= initialCitiesLength; i--) {
@@ -355,13 +393,14 @@ function main() {
     }
   }
   
-  //Given a simple cityName (ex: "Austin"), accesses Teleport API to get city details, then uses those details to add a Marker to the MAP.
+  // cityName is a simple city name (ex: "Austin").
+  // Function accesses Teleport API to get city details, then uses those details to add a Marker to the MAP.
   function displayTeleportCity(cityName) {
     const general_settings = {
       url : `https://api.teleport.org/api/cities/` ,
       data : {
         search : `${cityName}` ,
-        limit : 7
+        limit : 3
       } ,
       dataType : `json` ,
       type : `GET` ,
@@ -377,14 +416,9 @@ function main() {
     $.ajax(general_settings);
   }
   
-  // Adds a marker to the MAP given cityDetail which include a fullName (Austin, Texas, United States) and latLng coordinates
+  // cityDetail is an object which includes fullName and (Austin, Texas, United States) and latLng coordinates.
+  // Adds a marker to the MAP using cityDetail.
   function addMarker(cityDetail) {
-    let image = {
-      url : `https://upload.wikimedia.org/wikipedia/en/e/e5/Purple_sphere.svg` ,
-      size : new google.maps.Size(24, 24) ,
-      origin : new google.maps.Point(0, 0) ,
-      anchor : new google.maps.Point(12, 12)
-    };
     let shape = {
       coords: [0, 0, 0, 25, 25, 25, 25, 0],
       type: 'poly'
@@ -392,38 +426,37 @@ function main() {
     let marker = new google.maps.Marker({
       position: cityDetail[`latLng`],
       map: MAP ,
-      //icon : image , 
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         strokeColor : "yellow",
         scale: 5
       } ,
-      //label : "O" ,
       shape : shape ,
       title : cityDetail[`fullName`] ,
     });
+    
     MARKERS.push(marker);
+
+    // When this marker is clicked, get the fullName from cityDetail and present information on the city.
     marker.addListener("click", function() {
-       processMapCityClick(cityDetail);
+       processInput(cityDetail[`fullName`]);
     });
   }
   
-  function processMapCityClick(city) {
-    processInput(city[`fullName`]);
-  }
-  
+  // On click of the MAP, Map mode begins.
   function handleClickOnMap() {
     $("#map_container").click(function() {
       startMapMode();
     });
   }
   
+  // Displays Map mode.  Hidding the help, search, and info sections and unhiding and unfading the MAP.
   function startMapMode() {
     removeHighlightedClass(".search_button");
     addHiddenClass(".search_textbox");
     addHiddenClass(".info_section");
     addHiddenClass(".exit_button");
-    addHiddenClass(".intro_section");
+    addHiddenClass(".help_section");
     removeHiddenClass("#map_container");
     removeHiddenClass(".search_section");
     removeFadedClass("#map_container");
@@ -441,6 +474,8 @@ function main() {
   /////////////////// SECTION PROPERTIES ///////////////////
   /////////////////////////////////////////////////////////
   
+
+  // Changes background color of section using CSS.
   function addHighlightedClass(section) {
     $(section).addClass("highlighted");
   }
@@ -449,6 +484,7 @@ function main() {
     $(section).removeClass("highlighted");
   }
   
+  // Adds the (display: none) CSS to a section.
   function addHiddenClass(section) {
     $(section).fadeOut(500);
     $(section).addClass("hidden");
@@ -459,6 +495,7 @@ function main() {
     $(section).removeClass("hidden");
   }
   
+  // Changes the color saturation of section using CSS.
   function addFadedClass(section) {
     $(section).fadeTo("slow", 0.2);
   }
@@ -467,14 +504,17 @@ function main() {
     $(section).fadeTo("slow", 1.0);
   }
   
+  // element is a class, altName is a string.
+  // Changes the alt and title attributes of an element.
   function reassignAltTitleAttribute(element, altName) {
     $(element).attr("alt", altName);
     $(element).attr("title", altName);
   }
   
+  // Changes focus to the element specified. For accessibility purposes.
   function setUserFocus(element) {
     $(element).focus();
   }
   
-$(initializePage)
+  $(initializePage)
 }

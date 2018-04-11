@@ -499,7 +499,7 @@ function main() {
   
   // Changes the color saturation of section using CSS.
   function addFadedClass(section) {
-    $(section).fadeTo("slow", 0.27);
+    $(section).fadeTo("slow", 0.24);
   }
   
   function removeFadedClass(section) {

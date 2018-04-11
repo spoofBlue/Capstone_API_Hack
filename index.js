@@ -86,7 +86,7 @@ function main() {
         <ul><li>A potential vacation spot! Many major cities have leisure and culture statistics.</li>
         <li>Where you grew up. Some Wikipedia entries have a surprising history!</li>
         <li>Looking to move? Check out a major city for cost of living details.</li>
-        <li>You can always zoom into the map to spark your curiosity.</li>
+        <li>You can always zoom into the map to spark your curiosity!</li>
         </ul>`);
     }
     
@@ -96,9 +96,10 @@ function main() {
   // If the textbox is already up and has user input inside, clicking the search button will begin the text-based search for a city.
   function handleSearchButton() {
     $(".search_button").click(function(event) {
-      startTextboxMode();
       event.preventDefault();
-      if (TEXTBOX_MODE === true) {
+      if (TEXTBOX_MODE === false) {
+        startTextboxMode();
+      } else {
         getUserTextboxInput();
         if (USER_INPUT !== "") {
           processInput(USER_INPUT);
@@ -337,8 +338,12 @@ function main() {
   
   //  Change which section user returns to, based on current location when requesting exit.
   function exitSection() {
-    if (TEXTBOX_MODE === true && INFO_MODE === true) {
+    if (INFO_MODE === true) {
+      if (MAP_MODE === true) {
+        startMapMode();
+      } else if (TEXTBOX_MODE === true) {
         startTextboxMode();
+        }
     } else {
         startMapMode();
     }

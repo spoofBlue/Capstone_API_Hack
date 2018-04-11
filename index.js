@@ -10,6 +10,7 @@ function initMap() {
     mapTypeId: google.maps.MapTypeId.HYBRID ,
     mapTypeControl: false,
     streetViewControl: false,
+    fullscreenControl: false,
     styles : [
     {featureType : "road.arterial" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
     {featureType : "transit" , elementType : "all" , stylers : [{ "visibility" : "off"}]} ,
@@ -112,8 +113,8 @@ function main() {
   /////////////////// INFO_MODE ///////////////////
   /////////////////////////////////////////////////////////
   
-// Given input from either the text-based search or the cityName provided by a clicked Google Maps city.
-// Ajax call searches user input in city database of Teleport API.  Success moves user to Info Mode.
+  // Given input from either the text-based search or the cityName provided by a clicked Google Maps city.
+  // Ajax call searches user input in city database of Teleport API.  Success moves user to Info Mode.
   function processInput(input) {
     const general_settings = {
       url : `https://api.teleport.org/api/cities/` ,

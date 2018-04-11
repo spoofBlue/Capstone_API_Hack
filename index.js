@@ -337,12 +337,8 @@ function main() {
   
   //  Change which section user returns to, based on current location when requesting exit.
   function exitSection() {
-    if (INFO_MODE === true) {
-      if (MAP_MODE === true) {
-        startMapMode();
-      } else if (TEXTBOX_MODE === true) {
+    if (TEXTBOX_MODE === true) {
         startTextboxMode();
-        }
     } else {
         startMapMode();
     }
